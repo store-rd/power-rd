@@ -1,92 +1,98 @@
-
 <!DOCTYPE html>
-<html lang="ar" dir="rtl">
+<!-- lang and dir will be set by JavaScript -->
+<html>
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>حاسبة تسعيرة الكهرباء العراقية الشاملة</title>
+    <!-- Title will be set by JavaScript -->
+    <title id="pageTitle">حاسبة تسعيرة الكهرباء</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
     <style>
-        body { font-family: 'Cairo', sans-serif; background-color: #f3f4f6; /* bg-gray-100 */ }
-        .rtl { direction: rtl; }
-        .ltr { direction: ltr; }
+        body { font-family: 'Cairo', sans-serif; background-color: #f3f4f6; }
         .card {
-            background-color: white; border-radius: 0.75rem; /* rounded-xl */
-            box-shadow: 0 6px 12px -3px rgba(0,0,0,0.07), 0 4px 8px -4px rgba(0,0,0,0.04); /* Softer shadow */
-            padding: 1rem 1.25rem; /* p-4 md:p-5 */
-            margin-bottom: 1.25rem; /* mb-5 */
-            border: 1px solid #e5e7eb; /* border-gray-200 */
+            background-color: white; border-radius: 0.75rem;
+            box-shadow: 0 6px 12px -3px rgba(0,0,0,0.07), 0 4px 8px -4px rgba(0,0,0,0.04);
+            padding: 1rem 1.25rem; margin-bottom: 1.25rem; border: 1px solid #e5e7eb;
         }
-        @media (min-width: 768px) { /* md breakpoint */
-            .card { padding: 1.5rem; /* p-6 for md and up */ }
-        }
+        @media (min-width: 768px) { .card { padding: 1.5rem; } }
         .btn {
-            display: inline-flex; align-items: center; justify-content: center;
-            gap: 0.5rem; /* space-x-2 for icons */
-            background-color: #3b82f6; /* bg-blue-500 */ color: white; padding: 0.6rem 1.1rem; /* Adjusted padding */
-            border-radius: 0.5rem; /* rounded-lg */ font-weight: 600; /* semibold */
+            display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem;
+            background-color: #3b82f6; color: white; padding: 0.6rem 1.1rem;
+            border-radius: 0.5rem; font-weight: 600;
             transition: background-color 0.2s ease-in-out, transform 0.15s ease-in-out, box-shadow 0.2s ease-in-out;
             cursor: pointer; box-shadow: 0 1px 2px 0 rgba(0,0,0,0.05);
         }
-        .btn:hover {
-            background-color: #2563eb; /* bg-blue-600 */ transform: translateY(-1px);
-            box-shadow: 0 2px 4px -1px rgba(0,0,0,0.06), 0 4px 5px 0 rgba(0,0,0,0.05);
-        }
-        .btn-red { background-color: #ef4444; /* bg-red-500 */ }
-        .btn-red:hover { background-color: #dc2626; /* bg-red-600 */ }
-        .btn-green { background-color: #10b981; /* bg-emerald-500 */ }
-        .btn-green:hover { background-color: #059669; /* bg-emerald-600 */ }
-        .btn-gray { background-color: #6b7280; /* bg-gray-500 */ }
-        .btn-gray:hover { background-color: #4b5563; /* bg-gray-600 */ }
+        .btn:hover { background-color: #2563eb; transform: translateY(-1px); box-shadow: 0 2px 4px -1px rgba(0,0,0,0.06), 0 4px 5px 0 rgba(0,0,0,0.05); }
+        .btn-red { background-color: #ef4444; } .btn-red:hover { background-color: #dc2626; }
+        .btn-green { background-color: #10b981; } .btn-green:hover { background-color: #059669; }
+        .btn-gray { background-color: #6b7280; } .btn-gray:hover { background-color: #4b5563; }
+        .btn-lang { background-color: #6b7280; font-size: 0.75rem; padding: 0.4rem 0.8rem; }
+        .btn-lang.active { background-color: #1d4ed8; transform: translateY(-1px); box-shadow: 0 2px 4px -1px rgba(0,0,0,0.06); }
 
-        .table-auto th, .table-auto td { padding: 0.6rem 0.5rem; border: 1px solid #e2e8f0; text-align: center; font-size: 0.875rem; /* text-sm */ }
-        .table-auto th { background-color: #e5e7eb; font-weight: 600; } /* semibold */
+        .table-auto th, .table-auto td { padding: 0.6rem 0.5rem; border: 1px solid #e2e8f0; text-align: center; font-size: 0.875rem; }
+        .table-auto th { background-color: #e5e7eb; font-weight: 600; }
 
-        .result-item { display: flex; justify-content: space-between; padding: 0.5rem 0; border-bottom: 1px solid #e2e8f0; font-size: 0.875rem; /* text-sm */ }
+        .result-item { display: flex; justify-content: space-between; padding: 0.5rem 0; border-bottom: 1px solid #e2e8f0; font-size: 0.875rem; }
         .result-item:last-child { border-bottom: none; }
         .result-item span:first-child { font-weight: 600; color: #374151; }
         .result-item span:last-child { color: #1f2937; }
+        html[dir="ltr"] .result-item span:first-child { text-align: left; }
+        html[dir="ltr"] .result-item span:last-child { text-align: right; }
+        html[dir="rtl"] .result-item span:first-child { text-align: right; }
+        html[dir="rtl"] .result-item span:last-child { text-align: left; }
+
 
         .device-item {
-            background-color: #f9fafb; /* bg-gray-50 */ padding: 0.75rem; border-radius: 0.5rem; margin-bottom: 0.75rem;
+            background-color: #f9fafb; padding: 0.75rem; border-radius: 0.5rem; margin-bottom: 0.75rem;
             display: flex; justify-content: space-between; align-items: center;
             border: 1px solid #e5e7eb; box-shadow: 0 1px 1px 0 rgba(0,0,0,0.03);
             transition: box-shadow 0.2s ease, border-color 0.2s ease;
         }
         .device-item:hover { border-color: #93c5fd; box-shadow: 0 2px 5px -1px rgba(0,0,0,0.04); }
-        
+        html[dir="ltr"] .device-item .flex-grow { margin-right: 0.5rem; margin-left:0;}
+        html[dir="rtl"] .device-item .flex-grow { margin-left: 0.5rem; margin-right:0;}
+
         .modal { display: none; position: fixed; z-index: 100; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgba(0,0,0,0.6); align-items: center; justify-content: center; padding: 1rem;}
-        .modal-content { background-color: #fefefe; margin: auto; padding: 1.25rem; border: 1px solid #ccc; width: 100%; max-width: 500px; border-radius: 0.5rem; box-shadow: 0 5px 15px rgba(0,0,0,0.3); text-align: right; position: relative; }
-        .modal-close { position: absolute; left: 10px; top: 5px; color: #aaa; font-size: 28px; font-weight: bold; cursor: pointer; }
+        .modal-content { background-color: #fefefe; margin: auto; padding: 1.25rem; border: 1px solid #ccc; width: 100%; max-width: 500px; border-radius: 0.5rem; box-shadow: 0 5px 15px rgba(0,0,0,0.3); position: relative; }
+        html[dir="ltr"] .modal-content { text-align: left; }
+        html[dir="rtl"] .modal-content { text-align: right; }
+        .modal-close { position: absolute; top: 5px; color: #aaa; font-size: 28px; font-weight: bold; cursor: pointer; }
+        html[dir="ltr"] .modal-close { right: 10px; left: auto; }
+        html[dir="rtl"] .modal-close { left: 10px; right: auto; }
         .modal-close:hover, .modal-close:focus { color: black; text-decoration: none; }
         
         #toast {
             position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%);
-            background-color: #1f2937; /* bg-gray-800 */ color: white; padding: 10px 18px; border-radius: 0.5rem; /* rounded-lg */
+            background-color: #1f2937; color: white; padding: 10px 18px; border-radius: 0.5rem;
             z-index: 1000; visibility: hidden; opacity: 0; transition: opacity 0.3s, visibility 0.3s, transform 0.3s;
-            box-shadow: 0 3px 8px rgba(0,0,0,0.15); font-size: 0.875rem; /* text-sm */
+            box-shadow: 0 3px 8px rgba(0,0,0,0.15); font-size: 0.875rem;
         }
         #toast.show { visibility: visible; opacity: 1; transform: translateX(-50%) translateY(0); }
-        .icon { width: 1.125rem; height: 1.125rem; /* 18px */ display: inline-block; vertical-align: middle; }
+        .icon { width: 1.125rem; height: 1.125rem; display: inline-block; vertical-align: middle; }
         
         input[type="number"], input[type="text"] {
-            text-align: right; padding: 0.5rem; /* p-2 */
-            border-radius: 0.375rem; /* rounded-md */
-            border: 1px solid #d1d5db; /* border-gray-300 */
-            font-size: 0.875rem; /* text-sm */
-            width: 100%;
+             padding: 0.5rem; border-radius: 0.375rem; border: 1px solid #d1d5db;
+             font-size: 0.875rem; width: 100%;
         }
-        label { font-size: 0.875rem; /* text-sm */ }
+        html[dir="ltr"] input[type="number"], html[dir="ltr"] input[type="text"] { text-align: left; }
+        html[dir="rtl"] input[type="number"], html[dir="rtl"] input[type="text"] { text-align: right; }
 
-        /* Custom scrollbar for device list and modal list */
+        label { font-size: 0.875rem; }
         .custom-scrollbar::-webkit-scrollbar { width: 6px; }
         .custom-scrollbar::-webkit-scrollbar-track { background: #f1f1f1; border-radius: 3px;}
         .custom-scrollbar::-webkit-scrollbar-thumb { background: #c7c7c7; border-radius: 3px;}
         .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #a3a3a3; }
+        
+        /* Utility for LTR/RTL specific icon margin */
+        .icon-leading { margin-right: 0.25rem; } /* Default for RTL */
+        html[dir="ltr"] .icon-leading { margin-left: 0.25rem; margin-right: 0; }
+        .icon-trailing { margin-left: 0.25rem; } /* Default for RTL */
+        html[dir="ltr"] .icon-trailing { margin-right: 0.25rem; margin-left: 0; }
+
     </style>
 </head>
-<body class="rtl">
+<body>
     <!-- SVG Icons Definition -->
     <svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
         <symbol id="icon-plus" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z" clip-rule="evenodd" /></symbol>
@@ -97,21 +103,29 @@
         <symbol id="icon-bulb" viewBox="0 0 20 20" fill="currentColor"><path d="M10 2a.75.75 0 01.75.75v1.256a3.948 3.948 0 012.564 2.297 3.959 3.959 0 010 5.394 3.949 3.949 0 01-2.564 2.297V15.5a.75.75 0 01-1.5 0v-1.502a3.948 3.948 0 01-2.564-2.297 3.959 3.959 0 010-5.394A3.949 3.949 0 018.5 4.006V2.75A.75.75 0 0110 2zM8.005 7.456a2.452 2.452 0 000 5.088 2.446 2.446 0 002.475.489.75.75 0 11.445-1.418 1.007 1.007 0 01-1.024-.199A1.005 1.005 0 019.5 10c0-.213.067-.414.187-.58a1.006 1.006 0 011.023-.198.75.75 0 01.445 1.417 2.446 2.446 0 002.475-.488 2.452 2.452 0 000-5.088 2.446 2.446 0 00-2.475-.49.75.75 0 11-.445 1.419c.39.123.709.39.83.718.12.327.068.69-.155.965a.992.992 0 01-1.37.155A.99.99 0 018.5 10a.99.99 0 01-.335-.727.993.993 0 01.155-.965c.12-.328.44-.595.83-.718a.75.75 0 01-.445-1.417A2.446 2.446 0 008.005 7.456zM10 18a1 1 0 100-2 1 1 0 000 2zM7 17a1 1 0 100-2 1 1 0 000 2zm6 0a1 1 0 100-2 1 1 0 000 2z" /></symbol>
     </svg>
 
-    <div class="container mx-auto p-3 sm:p-4 md:p-6 lg:p-8 max-w-5xl"> <!-- max-w-5xl for better control -->
+    <div class="container mx-auto p-3 sm:p-4 md:p-6 lg:p-8 max-w-5xl">
         <header class="text-center mb-6 md:mb-8">
-            <h1 class="text-2xl sm:text-3xl md:text-4xl font-bold text-indigo-600">حاسبة تسعيرة الكهرباء الشاملة</h1>
-            <p class="text-gray-600 mt-1.5 text-sm sm:text-base md:text-lg">تم انشاء من قبل Team RD</p>
+            <div class="mb-3 flex justify-center gap-2">
+                <button onclick="setLanguage('ar')" class="btn btn-lang" id="lang-ar" data-translate-key="lang_ar_button">العربية</button>
+                <button onclick="setLanguage('ku')" class="btn btn-lang" id="lang-ku" data-translate-key="lang_ku_button">کوردی</button>
+                <button onclick="setLanguage('en')" class="btn btn-lang" id="lang-en" data-translate-key="lang_en_button">English</button>
+            </div>
+            <h1 class="text-2xl sm:text-3xl md:text-4xl font-bold text-indigo-600" data-translate-key="header_title"></h1>
+            <p class="text-gray-600 mt-1.5 text-sm sm:text-base md:text-lg" data-translate-key="header_subtitle"></p>
         </header>
 
         <div class="card">
-            <h2 class="text-lg sm:text-xl font-semibold mb-3 text-indigo-700">جدول التسعيرة المنزلية (هاوبەشی ماڵان)</h2>
+            <h2 class="text-lg sm:text-xl font-semibold mb-3 text-indigo-700" data-translate-key="tariff_table_title"></h2>
             <div class="overflow-x-auto rounded-md border border-gray-200 shadow-sm">
                 <table class="w-full table-auto">
-                    <thead><tr><th>الشريحة (كيلوواط ساعة/شهر)</th><th>السعر (دينار/كيلوواط ساعة)</th></tr></thead>
+                    <thead><tr>
+                        <th data-translate-key="tariff_slab_header"></th>
+                        <th data-translate-key="tariff_price_header"></th>
+                    </tr></thead>
                     <tbody>
                         <tr><td>0 - 400</td><td>72</td></tr><tr><td>401 - 800</td><td>108</td></tr>
                         <tr><td>801 - 1200</td><td>175</td></tr><tr><td>1201 - 1600</td><td>265</td></tr>
-                        <tr><td>أكثر من 1600</td><td>350</td></tr>
+                        <tr><td data-translate-key="tariff_slab_over_1600">أكثر من 1600</td><td>350</td></tr>
                     </tbody>
                 </table>
             </div>
@@ -119,129 +133,330 @@
 
         <div class="lg:grid lg:grid-cols-12 lg:gap-5">
             <div class="card lg:col-span-7">
-                <h2 class="text-lg sm:text-xl font-semibold mb-1 text-indigo-700">1. إدارة الأجهزة</h2>
-                <button type="button" id="wattageGuideBtn" class="text-xs sm:text-sm text-indigo-600 hover:text-indigo-800 underline mb-3 inline-flex items-center gap-1">
-                    <svg class="icon -mt-0.5" style="width:0.875rem; height:0.875rem;"><use xlink:href="#icon-bulb"></use></svg>مساعدة في قدرة الأجهزة؟
+                <h2 class="text-lg sm:text-xl font-semibold mb-1 text-indigo-700" data-translate-key="device_management_title"></h2>
+                <button type="button" id="wattageGuideBtn" class="text-xs sm:text-sm text-indigo-600 hover:text-indigo-800 underline mb-3 inline-flex items-center">
+                    <svg class="icon -mt-0.5 icon-leading" style="width:0.875rem; height:0.875rem;"><use xlink:href="#icon-bulb"></use></svg>
+                    <span data-translate-key="wattage_guide_link"></span>
                 </button>
                 
                 <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-4 items-end">
                     <div>
-                        <label for="deviceName" class="block text-xs font-medium text-gray-700 mb-1">اسم الجهاز:</label>
-                        <input type="text" id="deviceName" placeholder="مثال: سبلت">
+                        <label for="deviceName" class="block text-xs font-medium text-gray-700 mb-1" data-translate-key="device_name_label"></label>
+                        <input type="text" id="deviceName" data-translate-key-placeholder="device_name_placeholder_text">
                     </div>
                     <div>
-                        <label for="wattage" class="block text-xs font-medium text-gray-700 mb-1">قدرة (واط):</label>
-                        <input type="number" id="wattage" placeholder="1750">
+                        <label for="wattage" class="block text-xs font-medium text-gray-700 mb-1" data-translate-key="device_wattage_label"></label>
+                        <input type="number" id="wattage" data-translate-key-placeholder="device_wattage_placeholder_text">
                     </div>
                     <div>
-                        <label for="hoursPerDay" class="block text-xs font-medium text-gray-700 mb-1">ساعات/يوم:</label>
-                        <input type="number" id="hoursPerDay" placeholder="15">
+                        <label for="hoursPerDay" class="block text-xs font-medium text-gray-700 mb-1" data-translate-key="device_hours_label"></label>
+                        <input type="number" id="hoursPerDay" data-translate-key-placeholder="device_hours_placeholder_text">
                     </div>
                 </div>
                 <button onclick="addDevice()" class="btn w-full sm:w-auto mb-4 text-sm">
-                    <svg class="icon"><use xlink:href="#icon-plus"></use></svg>إضافة جهاز
+                    <svg class="icon icon-leading"><use xlink:href="#icon-plus"></use></svg>
+                    <span data-translate-key="add_device_button"></span>
                 </button>
                 
                 <div class="flex flex-wrap gap-2 mb-3">
                     <button onclick="saveDevices()" class="btn btn-green text-xs sm:text-sm py-1.5 px-2.5">
-                        <svg class="icon" style="width:1rem; height:1rem;"><use xlink:href="#icon-save"></use></svg>حفظ القائمة
+                        <svg class="icon icon-leading" style="width:1rem; height:1rem;"><use xlink:href="#icon-save"></use></svg>
+                        <span data-translate-key="save_list_button"></span>
                     </button>
                     <button onclick="loadDevices()" class="btn btn-gray text-xs sm:text-sm py-1.5 px-2.5">
-                        <svg class="icon" style="width:1rem; height:1rem;"><use xlink:href="#icon-load"></use></svg>تحميل القائمة
+                        <svg class="icon icon-leading" style="width:1rem; height:1rem;"><use xlink:href="#icon-load"></use></svg>
+                        <span data-translate-key="load_list_button"></span>
                     </button>
                 </div>
 
-                <h3 class="text-base sm:text-lg font-semibold mt-1 mb-2 text-gray-700">قائمة الأجهزة:</h3>
+                <h3 class="text-base sm:text-lg font-semibold mt-1 mb-2 text-gray-700" data-translate-key="device_list_title"></h3>
                 <div id="deviceList" class="mb-2 max-h-60 sm:max-h-72 overflow-y-auto custom-scrollbar pr-1">
-                    <p class="text-gray-500 text-sm">لم يتم إضافة أي أجهزة بعد.</p>
+                    <p class="text-gray-500 text-sm" data-translate-key="no_devices_yet"></p>
                 </div>
                 <div id="totalDeviceConsumption" class="mt-3 text-sm sm:text-base font-bold text-indigo-700"></div>
             </div>
 
             <div class="card lg:col-span-5">
-                <h2 class="text-lg sm:text-xl font-semibold mb-3 text-indigo-700">2. حساب الفاتورة</h2>
+                <h2 class="text-lg sm:text-xl font-semibold mb-3 text-indigo-700" data-translate-key="bill_calculation_title"></h2>
                 <div>
-                    <label for="totalKWh" class="block text-xs font-medium text-gray-700 mb-1">إجمالي الاستهلاك الشهري (ك.و.س):</label>
-                    <input type="number" id="totalKWh" placeholder="يُعبأ من الأجهزة أو أدخل يدوياً">
-                    <p class="text-xs text-gray-500 mt-1">سيتم استخدام هذا الرقم. إذا فارغ، سيُستخدم مجموع الأجهزة.</p>
+                    <label for="totalKWh" class="block text-xs font-medium text-gray-700 mb-1" data-translate-key="total_kwh_label"></label>
+                    <input type="number" id="totalKWh" data-translate-key-placeholder="total_kwh_placeholder_text">
+                    <p class="text-xs text-gray-500 mt-1" data-translate-key="total_kwh_hint"></p>
                 </div>
                 <button onclick="calculateBill(true)" class="btn w-full mt-3 text-sm">
-                    <svg class="icon"><use xlink:href="#icon-calc"></use></svg>احسب الفاتورة الآن
+                    <svg class="icon icon-leading"><use xlink:href="#icon-calc"></use></svg>
+                    <span data-translate-key="calculate_bill_button"></span>
                 </button>
             </div>
         </div>
 
         <div id="resultArea" class="card hidden">
-            <h2 class="text-lg sm:text-xl font-semibold mb-3 text-emerald-600">تفاصيل الفاتورة:</h2>
+            <h2 class="text-lg sm:text-xl font-semibold mb-3 text-emerald-600" data-translate-key="bill_details_title"></h2>
             <div id="billDetails" class="space-y-0.5"></div>
             <div class="mt-4 pt-3 border-t border-gray-300 space-y-1.5">
-                <p class="text-sm sm:text-base font-semibold text-gray-700">متوسط التكلفة اليومية: <span id="avgDailyCost" class="ltr font-bold"></span> دينار</p>
-                <p class="text-sm sm:text-base font-semibold text-gray-700">متوسط التكلفة الأسبوعية: <span id="avgWeeklyCost" class="ltr font-bold"></span> دينار</p>
-                <p class="text-xl sm:text-2xl font-bold text-emerald-600 mt-2">إجمالي الفاتورة الشهرية: <span id="totalBill" class="ltr"></span> دينار عراقي</p>
+                <p class="text-sm sm:text-base font-semibold text-gray-700">
+                    <span data-translate-key="avg_daily_cost_label"></span> <span id="avgDailyCost" class="font-bold"></span> <span data-translate-key="currency_iqd_unit"></span>
+                </p>
+                <p class="text-sm sm:text-base font-semibold text-gray-700">
+                    <span data-translate-key="avg_weekly_cost_label"></span> <span id="avgWeeklyCost" class="font-bold"></span> <span data-translate-key="currency_iqd_unit_2"></span>
+                </p>
+                <p class="text-xl sm:text-2xl font-bold text-emerald-600 mt-2">
+                    <span data-translate-key="total_monthly_bill_label"></span> <span id="totalBill" class="font-bold"></span> <span data-translate-key="currency_iqd_full_unit"></span>
+                </p>
             </div>
         </div>
 
         <div class="card">
-            <h2 class="text-lg sm:text-xl font-semibold mb-3 text-indigo-700 flex items-center gap-2">
-                <svg class="icon" style="width:1.3rem; height:1.3rem;"><use xlink:href="#icon-bulb"></use></svg>
-                نصائح لتوفير الطاقة
+            <h2 class="text-lg sm:text-xl font-semibold mb-3 text-indigo-700 flex items-center">
+                <svg class="icon icon-leading" style="width:1.3rem; height:1.3rem;"><use xlink:href="#icon-bulb"></use></svg>
+                <span data-translate-key="energy_tips_title"></span>
             </h2>
-            <ul class="list-disc pr-4 space-y-1 text-gray-700 text-sm">
-                <li>استخدم لمبات LED الموفرة للطاقة.</li>
-                <li>أطفئ الأنوار والأجهزة عند عدم الحاجة إليها.</li>
-                <li>اضبط حرارة المكيف على درجة معتدلة (24-25°م).</li>
-                <li>قم بالصيانة الدورية لأجهزتك ونظف فلاترها.</li>
-                <li>افصل شواحن الأجهزة من المقبس بعد اكتمال الشحن.</li>
-                <li>استفد من الإضاءة الطبيعية قدر الإمكان.</li>
+            <ul class="list-disc space-y-1 text-gray-700 text-sm" id="energyTipsList">
+                 <!-- Tips will be populated by JS -->
             </ul>
         </div>
 
         <footer class="text-center mt-8 mb-4 text-gray-500 text-xs sm:text-sm">
-            <p>تم إنشاء هذه الحاسبة بناءً على جدول التسعيرة الرسمي. الأسعار تقديرية.</p>
-            <p>© <span id="currentYear"></span> حاسبة الكهرباء العراقية الشاملة</p>
+            <p data-translate-key="footer_disclaimer"></p>
+            <p>© <span id="currentYear"></span> <span data-translate-key="footer_copyright_name"></span></p>
         </footer>
     </div>
 
-    <!-- Wattage Guide Modal -->
     <div id="wattageModal" class="modal">
         <div class="modal-content">
             <span class="modal-close" onclick="closeModal('wattageModal')">×</span>
-            <h3 class="text-base sm:text-lg font-semibold mb-2 text-indigo-700">دليل قدرة الأجهزة (تقديري)</h3>
-            <ul class="list-disc pr-4 space-y-1 text-xs sm:text-sm text-gray-700 max-h-60 sm:max-h-72 overflow-y-auto custom-scrollbar">
-                <li>مكيف هواء (1 طن): 1000 - 1500 واط</li><li>مكيف هواء (1.5 طن): 1500 - 2000 واط</li>
-                <li>مكيف هواء (2 طن): 2000 - 2500 واط</li><li>ثلاجة/مجمد: 100 - 400 واط (متوسط)</li>
-                <li>غسالة ملابس (بدون تسخين): 300 - 500 واط</li><li>غسالة ملابس (مع تسخين): 1500 - 2500 واط</li>
-                <li>تلفزيون LED: 30 - 150 واط</li><li>مروحة: 50 - 100 واط</li>
-                <li>سخان مياه (هيتر): 1500 - 3000+ واط</li><li>مكواة: 1000 - 1800 واط</li>
-                <li>فرن كهربائي: 1200 - 2500 واط</li><li>مايكروويف: 600 - 1200 واط</li>
-                <li>لمبة LED: 5 - 20 واط</li><li>شاحن هاتف/لابتوب: 5 - 65 واط</li>
-                <li>مضخة مياه صغيرة: 250 - 750 واط</li>
+            <h3 class="text-base sm:text-lg font-semibold mb-2 text-indigo-700" data-translate-key="wattage_modal_title"></h3>
+            <ul class="list-disc space-y-1 text-xs sm:text-sm text-gray-700 max-h-60 sm:max-h-72 overflow-y-auto custom-scrollbar" id="wattageModalList">
+                 <!-- Wattage items will be populated by JS -->
             </ul>
-            <p class="mt-3 text-xs text-gray-500">ملاحظة: القيم تقريبية. تحقق من ملصق الجهاز للقدرة الدقيقة.</p>
+            <p class="mt-3 text-xs text-gray-500" data-translate-key="wattage_modal_note"></p>
         </div>
     </div>
     <div id="toast"></div>
 
     <script>
+        const translations = {
+            ar: {
+                page_title: "حاسبة تسعيرة الكهرباء الشاملة",
+                lang_ar_button: "العربية", lang_ku_button: "کوردی", lang_en_button: "English",
+                header_title: "حاسبة تسعيرة الكهرباء الشاملة",
+                header_subtitle: "أدخل بيانات أجهزتك لحساب فاتورتك بدقة",
+                tariff_table_title: "جدول التسعيرة المنزلية (هاوبەشی ماڵان)",
+                tariff_slab_header: "الشريحة (كيلوواط ساعة/شهر)",
+                tariff_price_header: "السعر (دينار/كيلوواط ساعة)",
+                tariff_slab_over_1600: "أكثر من 1600",
+                device_management_title: "1. إدارة الأجهزة",
+                wattage_guide_link: "مساعدة في قدرة الأجهزة؟",
+                device_name_label: "اسم الجهاز:", device_name_placeholder_text: "مثال: سبلت",
+                device_wattage_label: "قدرة (واط):", device_wattage_placeholder_text: "1750",
+                device_hours_label: "ساعات/يوم:", device_hours_placeholder_text: "15",
+                add_device_button: "إضافة جهاز", save_list_button: "حفظ القائمة", load_list_button: "تحميل القائمة",
+                device_list_title: "قائمة الأجهزة:", no_devices_yet: "لم يتم إضافة أي أجهزة بعد.",
+                total_device_consumption_text: "إجمالي استهلاك الأجهزة:", 
+                kwh_unit: "ك.و.س", watt_unit: "واط", hours_day_unit: "س/يوم",
+                bill_calculation_title: "2. حساب الفاتورة",
+                total_kwh_label: "إجمالي الاستهلاك الشهري (ك.و.س):",
+                total_kwh_placeholder_text: "يُعبأ من الأجهزة أو أدخل يدوياً",
+                total_kwh_hint: "سيتم استخدام هذا الرقم. إذا فارغ، سيُستخدم مجموع الأجهزة.",
+                calculate_bill_button: "احسب الفاتورة الآن",
+                bill_details_title: "تفاصيل الفاتورة:",
+                avg_daily_cost_label: "متوسط التكلفة اليومية:", avg_weekly_cost_label: "متوسط التكلفة الأسبوعية:",
+                total_monthly_bill_label: "إجمالي الفاتورة الشهرية:",
+                currency_iqd_unit: "دينار", currency_iqd_unit_2: "دينار", currency_iqd_full_unit: "دينار عراقي",
+                energy_tips_title: "نصائح لتوفير الطاقة",
+                tip_keys: ["tip1", "tip2", "tip3", "tip4", "tip5"], // Keys for tips array
+                tip1: "استخدم لمبات LED الموفرة للطاقة.", tip2: "أطفئ الأنوار والأجهزة عند عدم الحاجة إليها.",
+                tip3: "اضبط حرارة المكيف على درجة معتدلة (24-25°م).", tip4: "قم بالصيانة الدورية لأجهزتك ونظف فلاترها.", tip5: "افصل شواحن الأجهزة من المقبس بعد اكتمال الشحن.",
+                footer_disclaimer: "تم إنشاء هذه الحاسبة بناءً على جدول التسعيرة الرسمي. الأسعار تقديرية.",
+                footer_copyright_name: "TEAM-RD C2025",
+                wattage_modal_title: "دليل قدرة الأجهزة (تقديري)",
+                wattage_items_keys: ["ac1", "ac1_5", "ac2", "fridge", "wm_noheat", "wm_heat"], // Keys for wattage items
+                ac1: "مكيف هواء (1 طن): 1000 - 1500 واط", ac1_5: "مكيف هواء (1.5 طن): 1500 - 2000 واط", ac2: "مكيف هواء (2 طن): 2000 - 2500 واط",
+                fridge: "ثلاجة/مجمد: 100 - 400 واط", wm_noheat: "غسالة (بدون تسخين): 300 - 500 واط", wm_heat: "غسالة (مع تسخين): 1500 - 2500 واط",
+                wattage_modal_note: "ملاحظة: القيم تقريبية. تحقق من ملصق الجهاز للقدرة الدقيقة.",
+                alert_invalid_input: "يرجى إدخال قيم صحيحة: قدرة الجهاز (أكبر من صفر) وساعات التشغيل (0-24 ساعة).",
+                toast_devices_saved: "تم حفظ قائمة الأجهزة بنجاح!", toast_devices_loaded: "تم تحميل قائمة الأجهزة!",
+                toast_no_devices_to_save: "لا توجد أجهزة لحفظها!", toast_no_devices_loaded: "لا توجد قائمة أجهزة محفوظة.",
+                unnamed_device: "جهاز غير مسمى",
+                device_list_item_consumption: "الاستهلاك الشهري:", remove_button: "إزالة",
+                bill_details_total_consumption: "إجمالي الاستهلاك المقدر:", bill_details_slab_title: "تفاصيل حساب الشرائح:",
+                bill_details_slab_more_than: "شريحة أكثر من {{limit}}", bill_details_slab_range: "شريحة {{startLimit}} - {{endLimit}}",
+                error_enter_valid_consumption: "يرجى إدخال قيمة استهلاك شهرية صحيحة أو إضافة أجهزة.",
+                total_consumption_zero_details: "إجمالي الاستهلاك:",
+            },
+            en: { // English translations (abbreviated for brevity, ensure all keys from 'ar' exist)
+                page_title: "Comprehensive Electricity Bill Calculator",
+                lang_ar_button: "العربية", lang_ku_button: "کوردی", lang_en_button: "English",
+                header_title: "Comprehensive Electricity Bill Calculator", header_subtitle: "Enter device data for accurate bill calculation",
+                tariff_table_title: "Residential Tariff Table", tariff_slab_header: "Slab (kWh/month)", tariff_price_header: "Price (IQD/kWh)", tariff_slab_over_1600: "Over 1600",
+                device_management_title: "1. Device Management", wattage_guide_link: "Device wattage help?",
+                device_name_label: "Device Name:", device_name_placeholder_text: "e.g., AC",
+                device_wattage_label: "Wattage (W):", device_wattage_placeholder_text: "1750",
+                device_hours_label: "Hours/Day:", device_hours_placeholder_text: "15",
+                add_device_button: "Add Device", save_list_button: "Save List", load_list_button: "Load List",
+                device_list_title: "Device List:", no_devices_yet: "No devices added yet.",
+                total_device_consumption_text: "Total Device Consumption:", 
+                kwh_unit: "kWh", watt_unit: "W", hours_day_unit: "hrs/day",
+                bill_calculation_title: "2. Bill Calculation", total_kwh_label: "Total Monthly Consumption (kWh):",
+                total_kwh_placeholder_text: "From devices or manual entry", total_kwh_hint: "This value is used. If empty, device sum is used.",
+                calculate_bill_button: "Calculate Bill Now", bill_details_title: "Bill Details:",
+                avg_daily_cost_label: "Avg Daily Cost:", avg_weekly_cost_label: "Avg Weekly Cost:",
+                total_monthly_bill_label: "Total Monthly Bill:", 
+                currency_iqd_unit: "IQD", currency_iqd_unit_2: "IQD", currency_iqd_full_unit: "IQD",
+                energy_tips_title: "Energy Saving Tips", tip_keys: ["tip1", "tip2", "tip3", "tip4", "tip5"],
+                tip1: "Use LED bulbs.", tip2: "Turn off unused devices.", tip3: "Set AC to 24-25°C.", tip4: "Maintain your devices.", tip5: "Unplug chargers.",
+                footer_disclaimer: "Based on official tariffs. Estimates only.", footer_copyright_name: "TEAM-RD",
+                wattage_modal_title: "Device Wattage Guide (Approx.)", wattage_items_keys: ["ac1", "ac1_5", "ac2", "fridge", "wm_noheat", "wm_heat"],
+                ac1: "AC (1 Ton): 1000-1500W", ac1_5: "AC (1.5 Ton): 1500-2000W", ac2: "AC (2 Ton): 2000-2500W",
+                fridge: "Fridge/Freezer: 100-400W", wm_noheat: "Washer (no heat): 300-500W", wm_heat: "Washer (w/ heat): 1500-2500W",
+                wattage_modal_note: "Approximate values. Check device label.",
+                alert_invalid_input: "Invalid input: Wattage (>0), Hours (0-24).",
+                toast_devices_saved: "Device list saved!", toast_devices_loaded: "Device list loaded!",
+                toast_no_devices_to_save: "No devices to save!", toast_no_devices_loaded: "No saved list found.",
+                unnamed_device: "Unnamed Device", device_list_item_consumption: "Monthly Consumption:", remove_button: "Remove",
+                bill_details_total_consumption: "Est. Total Consumption:", bill_details_slab_title: "Slab Calculation:",
+                bill_details_slab_more_than: "Slab over {{limit}}", bill_details_slab_range: "Slab {{startLimit}} - {{endLimit}}",
+                error_enter_valid_consumption: "Enter valid consumption or add devices.",
+                total_consumption_zero_details: "Total Consumption:",
+            },
+            ku: { // Sorani Kurdish - (abbreviated, ensure all keys from 'ar' exist, these are placeholder quality)
+                page_title: "ژمێرەری گشتگیریی نرخی کارەبا",
+                lang_ar_button: "العربية", lang_ku_button: "کوردی", lang_en_button: "English",
+                header_title: "ژمێرەری گشتگیریی نرخی کارەبا", header_subtitle: "زانیاری ئامێرەکانت بنووسە",
+                tariff_table_title: "خشتەی نرخی ماڵان", tariff_slab_header: "پلە (کیلۆوات/مانگ)", tariff_price_header: "نرخ (دینار/کیلۆوات)", tariff_slab_over_1600: "زیاتر لە ١٦٠٠",
+                device_management_title: "١. بەڕێوەبردنی ئامێر", wattage_guide_link: "یارمەتی توانای ئامێر؟",
+                device_name_label: "ناوی ئامێر:", device_name_placeholder_text: "نموونە: سپلێت",
+                device_wattage_label: "توانا (وات):", device_wattage_placeholder_text: "١٧٥٠",
+                device_hours_label: "کاتژمێر/ڕۆژ:", device_hours_placeholder_text: "١٥",
+                add_device_button: "زیادکردنی ئامێر", save_list_button: "پاشەکەوتی لیست", load_list_button: "بارکردنی لیست",
+                device_list_title: "لیستی ئامێرەکان:", no_devices_yet: "ئامێر زیاد نەکراوە.",
+                total_device_consumption_text: "کۆی بەکاربردن:", 
+                kwh_unit: "ک.و.س", watt_unit: "وات", hours_day_unit: "ک/ڕۆژ",
+                bill_calculation_title: "٢. ژماردنی پسوڵە", total_kwh_label: "کۆی بەکاربردنی مانگانە (ک.و.س):",
+                total_kwh_placeholder_text: "دەستی یان لە ئامێرەکان", total_kwh_hint: "ئەم بەکاردێت. بەتاڵ بێت، کۆی ئامێرەکان.",
+                calculate_bill_button: "پسوڵە بحەسێبە", bill_details_title: "وردەکاری پسوڵە:",
+                avg_daily_cost_label: "تێچووی ڕۆژانە:", avg_weekly_cost_label: "تێچووی هەفتانە:",
+                total_monthly_bill_label: "کۆی پسوڵەی مانگانە:", 
+                currency_iqd_unit: "دینار", currency_iqd_unit_2: "دینار", currency_iqd_full_unit: "دیناری عێراقی",
+                energy_tips_title: "ڕێنمایی وزە", tip_keys: ["tip1", "tip2", "tip3", "tip4", "tip5"],
+                tip1: "گڵۆپی LED.", tip2: "ئامێری بێکار بکوژێنەوە.", tip3: "سپلێت ٢٤-٢٥°س.", tip4: "چاکسازی ئامێر.", tip5: "شاحنەکان دەربکە.",
+                footer_disclaimer: "نرخەکان مەزندەیین.", footer_copyright_name: " TEAM-RD ",
+                wattage_modal_title: "ڕێبەری توانای ئامێر", wattage_items_keys: ["ac1", "ac1_5", "ac2", "fridge", "wm_noheat", "wm_heat"],
+                ac1: "سپلێت (١ تەن): ١٠٠٠-١٥٠٠و", ac1_5: "سپلێت (١.٥ تەن): ١٥٠٠-٢٠٠٠و", ac2: "سپلێت (٢ تەن): ٢٠٠٠-٢٥٠٠و",
+                fridge: "سەلاجە: ١٠٠-٤٠٠و", wm_noheat: "جلشۆر (بێ گەرمی): ٣٠٠-٥٠٠و", wm_heat: "جلشۆر (بە گەرمی): ١٥٠٠-٢٥٠٠و",
+                wattage_modal_note: "نرخەکان نزیکەیین.",
+                alert_invalid_input: "زانیاری هەڵە: توانا (>٠)، کاتژمێر (٠-٢٤).",
+                toast_devices_saved: "لیست پاشەکەوت کرا!", toast_devices_loaded: "لیست بارکرا!",
+                toast_no_devices_to_save: "ئامێر نییە بۆ پاشەکەوت!", toast_no_devices_loaded: "لیستی پاشەکەوتکراو نییە.",
+                unnamed_device: "ئامێری بێناو", device_list_item_consumption: "بەکاربردنی مانگانە:", remove_button: "سڕینەوە",
+                bill_details_total_consumption: "کۆی بەکاربردن:", bill_details_slab_title: "ژماردنی پلە:",
+                bill_details_slab_more_than: "پلەی زیاتر لە {{limit}}", bill_details_slab_range: "پلەی {{startLimit}} - {{endLimit}}",
+                error_enter_valid_consumption: "نرخێکی دروست داخڵ بکە.",
+                total_consumption_zero_details: "کۆی بەکاربردن:",
+            }
+        };
+
+        let currentLanguage = localStorage.getItem('preferredLanguage_v5') || 'ar';
         document.getElementById('currentYear').textContent = new Date().getFullYear();
-        const tiers = [ // Verified: Correct as per Iraqi tariff image
+        const tiers = [
             { limit: 400, rate: 72 }, { limit: 800, rate: 108 },
             { limit: 1200, rate: 175 }, { limit: 1600, rate: 265 },
             { limit: Infinity, rate: 350 }
         ];
-        let devices = []; // Array to store device objects { name, wattage, hours, monthlyKWh }
+        let devices = [];
 
-        function formatCurrency(numberInput) {
-            let num = Number(String(numberInput));
-            if (isNaN(num)) return '0.00';
-            let parts = num.toFixed(2).split('.');
-            parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-            return parts.join('.');
+        function formatNumber(number, lang = currentLanguage) {
+            if (isNaN(Number(number))) return String(number);
+             let numStr = String(number);
+             // For Kurdish and Arabic, use Eastern Arabic numerals if desired, or stick to Western for simplicity
+             // Here, we just format with language-specific separators for Western numerals
+             if (lang === 'en') {
+                 return Number(numStr).toLocaleString('en-US', { minimumFractionDigits: (numStr.includes('.') ? 2 : 0), maximumFractionDigits: 2 });
+             } else { // ar, ku
+                 // Basic replacement for Western to Eastern Arabic Numerals
+                 // const westernArabicNumerals = [/0/g, /1/g, /2/g, /3/g, /4/g, /5/g, /6/g, /7/g, /8/g, /9/g];
+                 // const easternArabicNumerals = ['٠', '١', '٢', '٣', '٤', '٥', '٦', '٧', '٨', '٩'];
+                 // if (lang === 'ar' || lang === 'ku') { // Apply for ar and ku
+                 //    for (let i = 0; i < westernArabicNumerals.length; i++) {
+                 //        numStr = numStr.replace(westernArabicNumerals[i], easternArabicNumerals[i]);
+                 //    }
+                 // }
+                 // Simple comma for thousands for now, as toLocaleString for ar-IQ might not be what's expected visually
+                 let parts = Number(numStr).toFixed(numStr.includes('.') ? 2 : 0).split('.');
+                 parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, "،");
+                 return parts.join(".");
+             }
+        }
+        
+        function formatCurrency(numberInput, lang = currentLanguage) {
+            return formatNumber(Number(numberInput).toFixed(2), lang);
         }
 
-        function showToast(message) {
+        function getTranslation(key, lang = currentLanguage, replacements = {}) {
+            let text = translations[lang]?.[key] || translations['en']?.[key] || `_${key}_`;
+            for (const placeholder in replacements) {
+                text = text.replace(new RegExp(`{{\\s*${placeholder}\\s*}}`, 'g'), replacements[placeholder]);
+            }
+            return text;
+        }
+
+        function applyTranslations() {
+            document.querySelectorAll('[data-translate-key]').forEach(el => {
+                const key = el.getAttribute('data-translate-key');
+                el.innerHTML = getTranslation(key); // Use innerHTML for icons or complex content
+            });
+            document.querySelectorAll('[data-translate-key-placeholder]').forEach(el => {
+                const key = el.getAttribute('data-translate-key-placeholder');
+                el.placeholder = getTranslation(key);
+            });
+            document.getElementById('pageTitle').textContent = getTranslation('page_title');
+
+            // Update list item content dynamically
+            const energyTipsList = document.getElementById('energyTipsList');
+            energyTipsList.innerHTML = '';
+            (translations[currentLanguage].tip_keys || []).forEach(tipKey => {
+                const li = document.createElement('li');
+                li.setAttribute('data-translate-key', tipKey);
+                li.textContent = getTranslation(tipKey);
+                if(currentLanguage !== 'en') li.classList.add('mr-4'); else li.classList.add('ml-4'); // list-disc margin
+                energyTipsList.appendChild(li);
+            });
+
+            const wattageModalList = document.getElementById('wattageModalList');
+            wattageModalList.innerHTML = '';
+             (translations[currentLanguage].wattage_items_keys || []).forEach(itemKey => {
+                const li = document.createElement('li');
+                li.setAttribute('data-translate-key', itemKey);
+                li.textContent = getTranslation(itemKey);
+                 if(currentLanguage !== 'en') li.classList.add('mr-4'); else li.classList.add('ml-4');
+                wattageModalList.appendChild(li);
+            });
+            
+            // Set text direction and lang attribute
+            document.documentElement.lang = currentLanguage;
+            document.documentElement.dir = (currentLanguage === 'en') ? 'ltr' : 'rtl';
+
+            // Style active language button
+            ['ar', 'ku', 'en'].forEach(id => document.getElementById(`lang-${id}`).classList.remove('active'));
+            document.getElementById(`lang-${currentLanguage}`).classList.add('active');
+
+            // Update elements that show numbers or units
+            renderDeviceList(); 
+            if (!document.getElementById('resultArea').classList.contains('hidden')) {
+                 calculateBill(true, true);
+            }
+            updateTotalDeviceConsumption();
+        }
+        
+        function setLanguage(lang) {
+            currentLanguage = lang;
+            localStorage.setItem('preferredLanguage_v5', lang);
+            applyTranslations();
+        }
+
+        function showToast(messageKey) {
             const toast = document.getElementById('toast');
-            toast.textContent = message;
+            toast.textContent = getTranslation(messageKey);
             toast.classList.add('show');
             setTimeout(() => { toast.classList.remove('show'); }, 3000);
         }
@@ -250,47 +465,47 @@
             const deviceNameInput = document.getElementById('deviceName');
             const wattageInput = document.getElementById('wattage');
             const hoursPerDayInput = document.getElementById('hoursPerDay');
-
-            const deviceName = deviceNameInput.value.trim() || "جهاز غير مسمى";
+            const deviceName = deviceNameInput.value.trim() || getTranslation('unnamed_device');
             const wattage = parseFloat(wattageInput.value);
             const hoursPerDay = parseFloat(hoursPerDayInput.value);
-            const daysInMonth = 30; // Standard assumption for monthly calculation
 
             if (isNaN(wattage) || wattage <= 0 || isNaN(hoursPerDay) || hoursPerDay < 0 || hoursPerDay > 24) {
-                alert("يرجى إدخال قيم صحيحة: قدرة الجهاز (أكبر من صفر) وساعات التشغيل (0-24 ساعة).");
-                return;
+                alert(getTranslation('alert_invalid_input')); return;
             }
-
-            const monthlyKWh = (wattage / 1000) * hoursPerDay * daysInMonth;
+            const monthlyKWh = (wattage / 1000) * hoursPerDay * 30;
             devices.push({ name: deviceName, wattage, hours: hoursPerDay, monthlyKWh });
-
-            renderDeviceList();
-            updateTotalDeviceConsumption();
-            calculateBill(false); // Auto-calculate bill, not triggered by main "Calculate" button
-
+            renderDeviceList(); updateTotalDeviceConsumption(); calculateBill(false);
             deviceNameInput.value = ''; wattageInput.value = ''; hoursPerDayInput.value = '';
-            deviceNameInput.focus(); // For quick next entry
+            deviceNameInput.focus();
         }
 
         function renderDeviceList() {
             const deviceListDiv = document.getElementById('deviceList');
             deviceListDiv.innerHTML = ''; 
             if (devices.length === 0) {
-                deviceListDiv.innerHTML = '<p class="text-gray-500 text-sm">لم يتم إضافة أي أجهزة بعد.</p>';
-                return;
+                deviceListDiv.innerHTML = `<p class="text-gray-500 text-sm">${getTranslation('no_devices_yet')}</p>`; return;
             }
+            const wattUnit = getTranslation('watt_unit');
+            const hoursDayUnit = getTranslation('hours_day_unit');
+            const consumptionLabel = getTranslation('device_list_item_consumption');
+            const kwhUnit = getTranslation('kwh_unit');
+            const removeBtnText = getTranslation('remove_button');
+
             devices.forEach((device, index) => {
                 const deviceElement = document.createElement('div');
                 deviceElement.classList.add('device-item');
+                const detailsText = `(${formatNumber(device.wattage)} ${wattUnit}, ${formatNumber(device.hours)} ${hoursDayUnit})`;
+                const consumptionValueText = `${formatNumber(device.monthlyKWh.toFixed(2))} ${kwhUnit}`;
+                
                 deviceElement.innerHTML = `
-                    <div class="flex-grow mr-2">
+                    <div class="flex-grow ${currentLanguage === 'en' ? 'ml-2' : 'mr-2'}">
                         <span class="font-semibold text-gray-800 text-sm">${device.name}</span> 
-                        <span class="text-xs text-gray-500 ltr block sm:inline sm:ml-1">(${device.wattage} واط, ${device.hours} س/يوم)</span><br>
-                        <span class="text-indigo-600 font-medium text-xs">الاستهلاك الشهري: <span class="ltr">${device.monthlyKWh.toFixed(2)}</span> ك.و.س</span>
+                        <span class="text-xs text-gray-500 block sm:inline sm:ml-1 ${currentLanguage === 'en' ? 'ltr' : 'rtl'}">${detailsText}</span><br>
+                        <span class="text-indigo-600 font-medium text-xs">${consumptionLabel} <span class="${currentLanguage === 'en' ? 'ltr' : 'rtl'}">${consumptionValueText}</span></span>
                     </div>
                     <button onclick="removeDevice(${index})" class="btn btn-red text-xs py-1 px-1.5 sm:px-2">
-                        <svg class="icon" style="width:0.875rem; height:0.875rem;"><use xlink:href="#icon-trash"></use></svg>
-                        <span class="hidden sm:inline">إزالة</span>
+                        <svg class="icon icon-leading" style="width:0.875rem; height:0.875rem;"><use xlink:href="#icon-trash"></use></svg>
+                        <span class="hidden sm:inline">${removeBtnText}</span>
                     </button>`;
                 deviceListDiv.appendChild(deviceElement);
             });
@@ -298,32 +513,29 @@
 
         function removeDevice(index) {
             devices.splice(index, 1);
-            renderDeviceList();
-            updateTotalDeviceConsumption();
-            calculateBill(false); // Auto-calculate bill
+            renderDeviceList(); updateTotalDeviceConsumption(); calculateBill(false);
         }
 
         function updateTotalDeviceConsumption() {
             const totalDeviceConsumptionDiv = document.getElementById('totalDeviceConsumption');
             const totalKWhInput = document.getElementById('totalKWh');
-            const totalMonthlyKWhFromDevices = devices.reduce((sum, device) => sum + device.monthlyKWh, 0);
+            const totalKWhFromDevices = devices.reduce((sum, d) => sum + d.monthlyKWh, 0);
             
+            const label = getTranslation('total_device_consumption_text');
+            const unit = getTranslation('kwh_unit');
             totalDeviceConsumptionDiv.innerHTML = devices.length > 0 ?
-                `إجمالي استهلاك الأجهزة: <span class="ltr text-indigo-700 font-bold">${totalMonthlyKWhFromDevices.toFixed(2)}</span> ك.و.س` : '';
-            
+                `${label} <span class="${currentLanguage === 'en' ? 'ltr' : 'rtl'} text-indigo-700 font-bold">${formatNumber(totalKWhFromDevices.toFixed(2))}</span> ${unit}` : '';
             if (document.activeElement !== totalKWhInput || totalKWhInput.value === '') {
-                 totalKWhInput.value = totalMonthlyKWhFromDevices.toFixed(2);
+                 totalKWhInput.value = totalKWhFromDevices.toFixed(2);
             }
         }
         
-        function calculateBill(isTriggeredManually = false) {
+        function calculateBill(isTriggeredManually = false, forceRender = false) {
             const totalKWhInput = document.getElementById('totalKWh');
             let totalKWhValue = parseFloat(totalKWhInput.value);
-
             if (isNaN(totalKWhValue) || totalKWhValue < 0) {
-                const totalMonthlyKWhFromDevices = devices.reduce((sum, device) => sum + device.monthlyKWh, 0);
-                totalKWhValue = (devices.length > 0) ? totalMonthlyKWhFromDevices : 0;
-                if (isNaN(totalKWhValue)) totalKWhValue = 0; // Final fallback
+                totalKWhValue = devices.reduce((s, d) => s + d.monthlyKWh, 0);
+                if (isNaN(totalKWhValue)) totalKWhValue = 0;
                 totalKWhInput.value = totalKWhValue.toFixed(2);
             }
             
@@ -334,16 +546,18 @@
             const avgWeeklyCostSpan = document.getElementById('avgWeeklyCost');
             billDetailsDiv.innerHTML = '';
 
-            if (!isTriggeredManually && totalKWhValue === 0 && devices.length === 0) {
-                resultArea.classList.add('hidden');
-                return;
+            const kwhUnit = getTranslation('kwh_unit');
+            const currencyUnit = getTranslation('currency_iqd_unit');
+
+            if (!forceRender && !isTriggeredManually && totalKWhValue === 0 && devices.length === 0) {
+                resultArea.classList.add('hidden'); return;
             }
             
             if (totalKWhValue === 0) {
-                 billDetailsDiv.innerHTML = `<div class="result-item"><span>إجمالي الاستهلاك:</span><span class="ltr font-semibold">${formatCurrency(0)} ك.و.س</span></div>`;
-                 totalBillSpan.textContent = formatCurrency('0.00');
-                 avgDailyCostSpan.textContent = formatCurrency('0.00');
-                 avgWeeklyCostSpan.textContent = formatCurrency('0.00');
+                 billDetailsDiv.innerHTML = `<div class="result-item"><span>${getTranslation('total_consumption_zero_details')}</span><span class="${currentLanguage === 'en' ? 'ltr' : 'rtl'} font-semibold">${formatCurrency(0)} ${kwhUnit}</span></div>`;
+                 totalBillSpan.textContent = formatCurrency(0);
+                 avgDailyCostSpan.textContent = formatCurrency(0);
+                 avgWeeklyCostSpan.textContent = formatCurrency(0);
                  resultArea.classList.remove('hidden');
                  if(isTriggeredManually) setTimeout(() => resultArea.scrollIntoView({ behavior: 'smooth', block: 'start' }), 50);
                  return;
@@ -353,70 +567,62 @@
             let currentTotalCost = 0;
             let previousTierLimit = 0;
 
-            billDetailsDiv.innerHTML += `<div class="result-item"><span>إجمالي الاستهلاك المقدر:</span><span class="ltr font-semibold">${totalKWhValue.toFixed(2)} ك.و.س</span></div>`;
-            billDetailsDiv.innerHTML += `<hr class="my-1.5 border-gray-300"><h3 class="text-sm font-semibold mt-1 mb-0.5 text-gray-600">تفاصيل حساب الشرائح:</h3>`;
+            billDetailsDiv.innerHTML += `<div class="result-item"><span>${getTranslation('bill_details_total_consumption')}</span><span class="${currentLanguage === 'en' ? 'ltr' : 'rtl'} font-semibold">${formatNumber(totalKWhValue.toFixed(2))} ${kwhUnit}</span></div>`;
+            billDetailsDiv.innerHTML += `<hr class="my-1.5 border-gray-300"><h3 class="text-sm font-semibold mt-1 mb-0.5 text-gray-600">${getTranslation('bill_details_slab_title')}</h3>`;
             
-            let tierDetailsForDisplay = [];
-            for (const tier of tiers) {
-                if (remainingKWh <= 0) break;
+            tiers.forEach(tier => {
+                if (remainingKWh <= 0) return;
                 const tierConsumptionLimit = tier.limit - previousTierLimit;
                 const consumptionInThisTier = Math.min(remainingKWh, tierConsumptionLimit);
-                if (consumptionInThisTier <= 0) { previousTierLimit = tier.limit; continue; }
+                if (consumptionInThisTier <= 0) { previousTierLimit = tier.limit; return; }
                 
                 const costInThisTier = consumptionInThisTier * tier.rate;
                 currentTotalCost += costInThisTier;
                 
-                tierDetailsForDisplay.push({
-                    limit: tier.limit, previousLimit: previousTierLimit,
-                    consumption: consumptionInThisTier, rate: tier.rate, cost: costInThisTier
-                });
-                remainingKWh -= consumptionInThisTier;
-                previousTierLimit = tier.limit;
-            }
-            
-            tierDetailsForDisplay.forEach(detail => {
                 let tierLabel = '';
-                if (detail.limit === Infinity) {
-                    tierLabel = `شريحة أكثر من ${detail.previousLimit.toLocaleString('ar-EG')}`;
+                let startLimitNum = previousTierLimit === 0 ? 0 : previousTierLimit + 1;
+                if (tier.limit === Infinity) {
+                    tierLabel = getTranslation('bill_details_slab_more_than', currentLanguage, {limit: formatNumber(previousTierLimit)});
                 } else {
-                     tierLabel = `شريحة ${detail.previousLimit === 0 ? '0' : (detail.previousLimit + 1).toLocaleString('ar-EG')} - ${detail.limit.toLocaleString('ar-EG')}`;
+                    tierLabel = getTranslation('bill_details_slab_range', currentLanguage, {startLimit: formatNumber(startLimitNum), endLimit: formatNumber(tier.limit) });
                 }
-                const percentageOfTotal = currentTotalCost > 0 ? ((detail.cost / currentTotalCost) * 100).toFixed(1) : "0.0";
-
+                const percentageOfTotal = currentTotalCost > 0 ? ((costInThisTier / currentTotalCost) * 100).toFixed(1) : "0.0";
+                
                 billDetailsDiv.innerHTML += `
                     <div class="result-item">
-                        <span class="text-xs text-gray-600">${tierLabel} ك.و.س:</span>
-                        <span class="ltr text-xs text-gray-700">${detail.consumption.toFixed(2)} × ${detail.rate.toLocaleString('ar-EG')} = ${formatCurrency(detail.cost.toFixed(2))} د.ع 
-                        <span class="text-emerald-600">(${percentageOfTotal}%)</span></span>
+                        <span class="text-xs text-gray-600">${tierLabel} ${kwhUnit}:</span>
+                        <span class="${currentLanguage === 'en' ? 'ltr' : 'rtl'} text-xs text-gray-700">${formatNumber(consumptionInThisTier.toFixed(2))} × ${formatNumber(tier.rate)} = ${formatCurrency(costInThisTier)} ${currencyUnit} 
+                        <span class="text-emerald-600">(${formatNumber(percentageOfTotal)}%)</span></span>
                     </div>`;
+                remainingKWh -= consumptionInThisTier;
+                previousTierLimit = tier.limit;
             });
 
-            totalBillSpan.textContent = formatCurrency(currentTotalCost.toFixed(2));
-            avgDailyCostSpan.textContent = formatCurrency((currentTotalCost / 30).toFixed(2)); // Assuming 30 days month
-            avgWeeklyCostSpan.textContent = formatCurrency(((currentTotalCost / 30) * 7).toFixed(2));
+            totalBillSpan.textContent = formatCurrency(currentTotalCost);
+            avgDailyCostSpan.textContent = formatCurrency(currentTotalCost / 30);
+            avgWeeklyCostSpan.textContent = formatCurrency((currentTotalCost / 30) * 7);
             resultArea.classList.remove('hidden');
             
-            if (isTriggeredManually || (devices.length > 0 && totalKWhValue > 0) ) {
+            if (isTriggeredManually || (devices.length > 0 && totalKWhValue > 0) || forceRender ) {
                  setTimeout(() => resultArea.scrollIntoView({ behavior: 'smooth', block: 'start' }), 50);
             }
         }
 
         function saveDevices() {
-            if (devices.length === 0) { showToast("لا توجد أجهزة لحفظها!"); return; }
-            localStorage.setItem('iraqElectricityDevices_v3', JSON.stringify(devices)); // v3 for latest structure
-            showToast("تم حفظ قائمة الأجهزة بنجاح!");
+            if (devices.length === 0) { showToast("toast_no_devices_to_save"); return; }
+            localStorage.setItem('iraqElectricityDevices_v5', JSON.stringify(devices));
+            showToast("toast_devices_saved");
         }
 
         function loadDevices() {
-            const savedDevices = localStorage.getItem('iraqElectricityDevices_v3');
-            if (savedDevices) {
-                devices = JSON.parse(savedDevices);
-                renderDeviceList();
-                updateTotalDeviceConsumption();
-                showToast("تم تحميل قائمة الأجهزة!");
+            const savedData = localStorage.getItem('iraqElectricityDevices_v5');
+            if (savedData) {
+                devices = JSON.parse(savedData);
+                renderDeviceList(); updateTotalDeviceConsumption();
+                showToast("toast_devices_loaded");
                 if (devices.length > 0) calculateBill(false); 
             } else {
-                showToast("لا توجد قائمة أجهزة محفوظة.");
+                showToast("toast_no_devices_loaded");
             }
         }
         
@@ -427,11 +633,10 @@
         window.onclick = function(event) { if (event.target == wattageModal) wattageModal.style.display = "none"; }
 
         document.addEventListener('DOMContentLoaded', () => {
+            applyTranslations(); // Apply initial language translations
             if (document.getElementById('totalKWh').value === '' && devices.length === 0) {
                 document.getElementById('resultArea').classList.add('hidden');
             }
-            // Optional: Automatically load devices if you prefer that behavior
-            // loadDevices(); 
         });
     </script>
 </body>
